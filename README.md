@@ -11,7 +11,7 @@ This study focuses on predicting electricity demand in the city of Barcelona, us
 ### Keywords
 Energy efficiency, electricity consumption, demand forecasting, artificial intelligence, market volatility, Barcelona.
 
-# INTRODUCTION
+# Introduction
 
 The growing demand for energy, combined with the need to reduce emissions of harmful gases, has made the efficient management of energy resources one of the major challenges in modern cities. This challenge is especially relevant as energy continues to be a limited resource, and due to the inability to store energy efficiently. It emphasizes the need to have a better understanding of the necessary production to reduce resource waste.
 
