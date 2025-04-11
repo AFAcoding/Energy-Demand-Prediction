@@ -137,55 +137,42 @@ The traditional LSTM processes the input sequence in a single direction (usually
 
 Activation is the process through which a neuron transforms its input (a weighted value) into an output using an activation function. It is fundamental for introducing non-linearity into the neural network, which is the essence of neural networks. For our study, we will use various variations of the ReLU function, which is the activation function initially implemented in the model.
 
-1. **ReLU (Rectified Linear Unit)**:
-   The ReLU function outputs the input directly if it is positive, otherwise, it outputs zero.
+1. **ReLU (Rectified Linear Unit)**:  
+   The ReLU function outputs the input directly if it is positive, otherwise, it outputs zero.  
+   **Formula:**  
+   $$ f(x) = \max(0, x) $$  
 
-   $$ f(x) = \max(0, x) $$
-
-   - If \( x > 0 \), then \( f(x) = x \).
-   - If \( x \leq 0 \), then \( f(x) = 0 \).
-
-   **Example**:
-   - If \( x = 5 \), then \( f(x) = \max(0, 5) = 5 \).
-   - If \( x = -3 \), then \( f(x) = \max(0, -3) = 0 \).
+   - If \( x > 0 \), then \( f(x) = x \).  
+   - If \( x \leq 0 \), then \( f(x) = 0 \).  
 
 ---
 
-2. **Leaky ReLU (Leaky Rectified Linear Unit)**:
-   Leaky ReLU is similar to ReLU, but for negative values of \( x \), instead of returning zero, it returns a small negative value determined by \( \alpha \), which is a small constant.
-
+2. **Leaky ReLU (Leaky Rectified Linear Unit)**:  
+   Leaky ReLU is similar to ReLU, but for negative values of \( x \), instead of returning zero, it returns a small negative value determined by \( \alpha \), which is a small constant.  
+   **Formula:**  
    $$ f(x) = 
    \begin{cases}
      x & \text{if } x > 0 \\
      \alpha x & \text{if } x < 0
-   \end{cases} $$
+   \end{cases} $$  
 
-   - If \( x > 0 \), then \( f(x) = x \) (same as ReLU).
-   - If \( x \leq 0 \), then \( f(x) = \alpha x \), where \( \alpha \) is a small constant (usually between 0 and 1).
-
-   **Example** (Assume \( \alpha = 0.01 \)):
-   - If \( x = 5 \), then \( f(x) = 5 \) (since \( x > 0 \)).
-   - If \( x = -3 \), then \( f(x) = 0.01 \times (-3) = -0.03 \).
+   - If \( x > 0 \), then \( f(x) = x \) (same as ReLU).  
+   - If \( x \leq 0 \), then \( f(x) = \alpha x \), where \( \alpha \) is a small constant (usually between 0 and 1).  
 
 ---
 
-3. **ELU (Exponential Linear Unit)**:
-   ELU works similarly to ReLU for positive values of \( x \), but for negative values, it uses an exponential function to avoid the output being zero and allows for negative outputs.
-
+3. **ELU (Exponential Linear Unit)**:  
+   ELU works similarly to ReLU for positive values of \( x \), but for negative values, it uses an exponential function to avoid the output being zero and allows for negative outputs.  
+   **Formula:**  
    $$ f(x) = 
    \begin{cases}
      x & \text{if } x > 0 \\
      \alpha (e^x - 1) & \text{if } x < 0
-   \end{cases} $$
+   \end{cases} $$  
 
-   - If \( x > 0 \), then \( f(x) = x \) (same as ReLU).
-   - If \( x \leq 0 \), then \( f(x) = \alpha (e^x - 1) \), where \( \alpha \) is a constant (typically 1).
+   - If \( x > 0 \), then \( f(x) = x \) (same as ReLU).  
+   - If \( x \leq 0 \), then \( f(x) = \alpha (e^x - 1) \), where \( \alpha \) is a constant (typically 1).  
 
-   **Example** (Assume \( \alpha = 1 \)):
-   - If \( x = 5 \), then \( f(x) = 5 \) (since \( x > 0 \)).
-   - If \( x = -3 \), then \( f(x) = 1 \times (e^{-3} - 1) \approx 1 \times (0.0498 - 1) = -0.9502 \).
-
----
 As seen in the following table, developed from the study [1], each activation function behaves differently depending on the type of dataset. Significant differences can be observed between them, both in computation time and the results.
 
 ## 5.3 Bidirectional LSTM
