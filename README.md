@@ -98,3 +98,129 @@ Hyperparameters control the learning process of a model. In the case of XGBoost,
   **Minimize Loss Function + λ1 ∑|w_i| + λ2 ∑(w_i^2)**
 
   Where λ1 controls the L1 penalty and λ2 controls the L2 penalty.
+
+## 4.2 Monte Carlo Ensemble
+
+It is a technique based on random simulation to estimate the uncertainty in a model's predictions. Instead of training multiple models like in **Bootstrap Ensemble**, a single model is used, but variability is introduced in the prediction process. This variability can be added through techniques such as subsampling trees in ensemble models. By making multiple predictions for the same input but with small random variations, a distribution of predictions is obtained, which allows for the calculation of a prediction interval in a manner similar to what is done in **Bootstrap Ensemble**.
+
+This technique is widely used when one wants to obtain a measure of uncertainty without having to train multiple models, making it more efficient in terms of computation.
+
+## 4.3 Bootstrap Ensemble
+
+It is a statistical technique based on creating multiple random samples from the available data. The goal is to obtain a better estimate of the uncertainty of a prediction model. This technique is based on bootstrapping, meaning that new data samples are created by randomly selecting elements from the original sample, allowing repetitions.
+
+Each of these samples is used to train an independent model. When we want to make a prediction, all these models are used, and their results are combined to obtain a distribution of predictions. It is a combination of using the boost from XGBoost while also having multiple trees that generate different regression values. This distribution allows for estimating a prediction interval by capturing the range of variability of the generated predictions.
+
+This technique is very useful when one wants to have an estimate of uncertainty without needing to make assumptions about the distribution of the model's errors. Additionally, since it relies on the use of multiple models, it can also help improve the generalization of the predictions.
+
+## 5 NEURAL NETWORK (CNN)
+
+Next, we will conduct several tests on an initial model. The model is as follows:
+
+## 5.1 Long Short-Term Memory (LSTM)
+
+First, the model was trained and evaluated using the ReLU activation and introducing the concept of LSTM (Long Short-Term Memory), which is a type of RNN (Recurrent Neural Network) designed to capture long-term dependencies in data sequences. This is possible due to the structure of gates. The gate structure allows for the retention of relevant information over long periods, whereas traditional RNNs cannot do this.
+
+LSTMs operate through the following gates that control the flow of information:
+
+- **Forget Gate**: Decides which information from the memory should be retained or discarded. The gate value is between 0 (information is discarded) and 1 (information is retained).
+  
+- **Input Gate**: Decides which new information is added to the memory, combining the current input with the previous state. The input gate uses an activation function (usually a sigmoid) to control the update.
+  
+  $$ \sigma(x) = \frac{1}{1 + e^{-x}} $$
+
+- **Output Gate**: Determines which information is transmitted to the next layer or as output. It also uses a sigmoid activation to decide the flow of information.
+
+The traditional LSTM processes the input sequence in a single direction (usually left to right). The state of the network at each moment depends on the input and the previous state, learning past dependencies to predict future ones.
+
+## 5.2 Activation
+
+Activation is the process through which a neuron transforms its input (a weighted value) into an output using an activation function. It is fundamental for introducing non-linearity into the neural network, which is the essence of neural networks. For our study, we will use various variations of the ReLU function, which is the activation function initially implemented in the model.
+
+- **ReLU (Rectified Linear Unit)**:
+  $$ f(x) = \max(0, x) $$
+
+- **Leaky ReLU (Leaky Rectified Linear Unit)**:
+  $$ f(x) = 
+  \begin{cases}
+    x & \text{if } x > 0 \\
+    \alpha x & \text{if } x < 0
+  \end{cases} $$
+
+- **ELU (Exponential Linear Unit)**:
+  $$ f(x) = 
+  \begin{cases}
+    x & \text{if } x > 0 \\
+    \alpha (e^x - 1) & \text{if } x < 0
+  \end{cases} $$
+
+As seen in the following table, developed from the study [1], each activation function behaves differently depending on the type of dataset. Significant differences can be observed between them, both in computation time and the results.
+
+## 5.3 Bidirectional LSTM
+
+The bidirectional LSTM consists of two parallel input paths. One processes the sequence from left to right, while the other does so from right to left. This feature allows the model to process the data sequence in both directions, providing the network with more context of the sequence.
+
+To evaluate the different types of models, we will generate a model for each activation type mentioned, both with traditional LSTM and with bidirectional LSTM, all of them initially structured in the same way.
+
+## 5.4 Evaluation Metrics
+
+The metrics used during the study to evaluate how suitable the model and the chosen activation type are for our task will be:
+
+- **MSE (Mean Squared Error)**: The average of the squared differences between the predicted and actual values. It penalizes predictions that are farther away.
+  $$ MSE = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 $$
+
+- **MAPE (Mean Absolute Percentage Error)**: The average of the absolute relative errors in percentage.
+  $$ MAPE = \frac{1}{n} \sum_{i=1}^{n} \left| \frac{y_i - \hat{y}_i}{y_i} \right| \times 100 $$
+
+- **R² (Coefficient of Determination)**: Indicates the proportion of variability explained by the model. A value close to 1 indicates a good fit.
+  $$ R^2 = 1 - \frac{\sum_{i=1}^{n} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{n} (y_i - \bar{y})^2} $$
+
+## 5.5 Results
+
+As we can observe, the models where the bidirectional LSTM was applied generally obtained better results using the same activation function. However, the best result was achieved through the traditional LSTM model with the ELU activation function.
+
+On the other hand, it can be affirmed that the ELU activation function, which is the most computationally expensive, has outperformed the other activation functions from the ReLU family, followed by LeakyReLU, and lastly ReLU, which is the least costly among them. 
+
+For the test data, we can observe that all models achieved better results than during training, but with very similar metrics to those of the validation set. This phenomenon is caused by the use of strong regularization, in our case, the Dropout layer and Batch Normalization.
+
+## 5.6 Effect of Batch Normalization
+
+Batch Normalization normalizes the activations of each layer using the mean and variance of the batch during training. However, during inference (validation and testing), it uses the accumulated mean and variance from the entire training set, making the predictions more stable.
+
+- **During training**: The layer normalizes its output using the mean and standard deviation of the current batch of inputs. That is, for each channel being normalized, it helps with convergence. The layer returns:
+  $$ \gamma \cdot \frac{batch - \text{mean(batch)}}{\sqrt{\text{var(batch)} + \epsilon}} + \beta $$
+
+  The terms are explained as follows:
+  - **ϵ** is a small constant (configurable as part of the constructor arguments).
+  - **γ** is a learned scaling factor (initialized as 1), which can be disabled by passing `scale=False` to the constructor.
+  - **β** is a learned offset factor (initialized as 0), which can be disabled by passing `center=False` to the constructor.
+
+- **During validation/test**: The layer normalizes its output using a moving average of the mean and standard deviation of the batches seen during training, making the model more stable and achieving better generalization. It returns:
+  $$ \gamma \cdot \frac{batch - \text{self.moving mean}}{\sqrt{\text{self.moving var} + \epsilon}} + \beta $$
+
+  The terms are explained as follows:
+  - **self.moving mean** and **self.moving var** are non-trainable variables that are updated every time the layer is called in training mode, as follows:
+    $$ \text{moving mean} = \text{moving mean} \cdot \text{momentum} + \text{mean(batch)} \cdot (1 - \text{momentum}) $$
+    $$ \text{moving var} = \text{moving var} \cdot \text{momentum} + \text{var(batch)} \cdot (1 - \text{momentum}) $$
+
+  The layer will only normalize its inputs during inference after having been trained with data that has statistics similar to the inference data.
+
+## 5.7 Effect of Dropout
+
+Dropout is a regularization technique that aims to randomly deactivate a percentage of neurons during each forward pass of training. This forces the model to be more robust and prevents excessive dependence on certain neurons.
+
+- **During training**: The model trains with a "degraded" architecture, reducing its capacity and increasing loss during the process.
+  
+- **During validation/test**: The Dropout regularization technique is not applied, and all neurons are active, allowing the model to function at its full potential.
+
+## 6 CONCLUSIONS
+
+In conclusion, we have tested and evaluated several machine learning models, including Random Forest, XGBoost, and LSTM networks, specifically focusing on how different configurations and techniques impact performance.
+
+- **Random Forest and XGBoost**: Both models showed excellent performance with high generalization capabilities, especially when using feature selection methods and tuning hyperparameters with GridSearchCV. The ability of Random Forest to handle high-dimensional datasets and the sequential correction of errors in XGBoost with gradient boosting proved to be highly effective.
+
+- **LSTM Networks**: The LSTM models, particularly when using bidirectional LSTM layers, were effective in capturing long-term dependencies in sequential data. Among the various activation functions tested, ELU showed superior results in terms of prediction accuracy, despite being computationally more expensive. The addition of Dropout and Batch Normalization improved model stability and prevented overfitting.
+
+- **Model Evaluation**: The evaluation metrics, such as MSE, MAPE, and R², helped in comparing the different models' performances. The models with LSTM (especially bidirectional) generally outperformed others, and the most significant improvement was observed when using the ELU activation function. The dropout and batch normalization techniques further enhanced the generalization of the models.
+
+In summary, **LSTM with ELU activation** and **XGBoost** models offered the best overall performance for the task. However, the choice of the model and its configuration depends heavily on the specific problem and dataset at hand. Future work could involve experimenting with different neural network architectures, regularization techniques, and further fine-tuning of hyperparameters to improve the models' performance.
