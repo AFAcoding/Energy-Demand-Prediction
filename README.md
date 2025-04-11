@@ -53,7 +53,7 @@ To understand the influence of the different selected independent variables with
 - **Spearman**: Measures the monotonic relationship (when two variables evolve in the same direction), but not necessarily in a linear way.
 - **Distance Correlation (DCOR)**: Measures all types of dependence between two variables, whether linear or non-linear.
 
-## 3. RANDOM FOREST REGRESSOR
+## 3. Random Forest Regressor
 
 The RandomForestRegressor is a regression model that uses a set of multiple decision trees to make predictions. This model uses a technique called **bagging** to generate complete decision trees in parallel, based on a random subset of the data and features. The final prediction is an average of all the predictions from the different decision trees.
 
