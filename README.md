@@ -69,7 +69,7 @@ Once the optimal features for modeling the phenomenon are selected, the **GridSe
 
 With this model, we can also quantify the uncertainty associated with each prediction of the target variable. We calculate it using the standard deviation of the predictions from each of the trees.
 
-## 4. EXTREME GRADIENT BOOSTING
+## 4. Extreme Gradient Boosting
 
 XGBoost is a scalable and distributed decision tree learning technique augmented with gradient (GBDT), belonging to the ensemble learning model family. GBDT trains a set of shallow decision trees sequentially, with each iteration using the residual errors from the previous model. The new trees are optimized to correct the errors of the previous trees. The final prediction is a weighted sum of all the tree predictions.
 
@@ -113,7 +113,7 @@ Each of these samples is used to train an independent model. When we want to mak
 
 This technique is very useful when one wants to have an estimate of uncertainty without needing to make assumptions about the distribution of the model's errors. Additionally, since it relies on the use of multiple models, it can also help improve the generalization of the predictions.
 
-## 5 NEURAL NETWORK (CNN)
+## 5 Neural Network (CNN)
 
 Next, we will conduct several tests on an initial model. The model is as follows:
 
@@ -213,7 +213,7 @@ Dropout is a regularization technique that aims to randomly deactivate a percent
   
 - **During validation/test**: The Dropout regularization technique is not applied, and all neurons are active, allowing the model to function at its full potential.
 
-## 6 CONCLUSIONS
+## 6 Conclusions
 
 In conclusion, we have tested and evaluated several machine learning models, including Random Forest, XGBoost, and LSTM networks, specifically focusing on how different configurations and techniques impact performance.
 
