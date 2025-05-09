@@ -143,47 +143,37 @@ def evaluate_model_mc(y_test, y_pred_mean, y_pred_std):
 evaluate_model_mc(y_test, mean_preds, std_preds)
 
 def evaluate_model_mc(y_test, y_pred_mean, y_pred_std):
-    # Flatten arrays
     y_test = y_test.flatten()
     y_pred_mean = y_pred_mean.flatten()
     y_pred_std = y_pred_std.flatten()
 
-    # Calculate percentage errors
     Min = y_test.min()
     Max = y_test.max()
-    Range = Max - Min
+    Rang = Max - Min
 
-    percentual_errors = (abs(y_test - y_pred_mean) / abs(Range)) * 100
+    errors_percentual = (abs(y_test - y_pred_mean) / abs(Rang)) * 100
 
-    # Clip the percentage errors to a maximum value
-    percentual_errors = np.clip(percentual_errors, 0, 30)
+    errors_percentual = np.clip(errors_percentual, 0, 30)
 
-    # Create the figure
     fig, ax = plt.subplots(figsize=(10, 4))
 
-    # Histogram with KDE
-    sns.histplot(percentual_errors, kde=True, stat="density", bins=60, ax=ax, color="skyblue", edgecolor="black")
+    sns.histplot(errors_percentual, kde=True, stat="percent", bins=60, ax=ax, color="skyblue", edgecolor="black")
 
-    # Aesthetics of the plot with larger, bold titles
-    ax.set_title("Distribution of Percentage Errors", fontsize=14, fontweight='bold')
-    ax.set_xlabel("Percentage Error (%)", fontsize=13)
-    ax.set_ylabel("Density", fontsize=13)
+    ax.set_title("Distribució dels errors percentuals", fontsize=14, fontweight='bold')
+    ax.set_xlabel("Error percentual (%)", fontsize=13)
+    ax.set_ylabel("Densitat", fontsize=13)
 
     ax.set_xlim(left=0, right=5)
     ax.set_ylim(bottom=0)
 
-    # Add more labels to the X-axis
     ax.set_xticks(np.arange(0, 5.1, 0.5))
     ax.set_xticklabels([f'{i}%' for i in np.arange(0, 5.1, 0.5)])
 
-    # Add labels to the Y-axis from 0.1 to 0.1
-    ax.set_yticks(np.arange(0, 0.7, 0.1))
-    ax.set_yticklabels([f'{i:.1f}' for i in np.arange(0, 0.7, 0.1)])
+    ax.set_yticks(np.arange(0, 31, 5))
+    ax.set_yticklabels([f'{i:.1f}' for i in np.arange(0, 31, 5)])
 
-    # Add grid
     ax.grid(True)
 
-    # Adjust layout
     plt.tight_layout()
     plt.show()
 
