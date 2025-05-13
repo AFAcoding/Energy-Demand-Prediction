@@ -24,6 +24,7 @@ The goal of the project is to provide insights into the factors influencing ener
 
 # Project Structure
 
+```
 /Barcelona-Energy-Demand
 │
 ├── data/
@@ -44,6 +45,7 @@ The goal of the project is to provide insights into the factors influencing ener
 ├── evaluate_models.py # Script to evaluate models
 ├── preprocess_data.py # Data preprocessing script
 └── uncertainty_estimation.py # Script for uncertainty estimation
+```
 
 # Results
 
