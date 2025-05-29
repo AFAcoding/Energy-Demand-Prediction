@@ -51,23 +51,35 @@ Barcelona-Energy-Demand
 
 Here are the final results from the models' performance:
 
-| **Model**                               | **MAPE** | **R²**   |
-|-----------------------------------------|----------|----------|
-|                          **LSTM Models**                      |
-| LSTM ELU                                | 1.7424   | 0.9683   |
-| LSTM ELU + Monte Carlo Dropout          | 1.7648   | 0.9678   |
-| LSTM LEAKY                              | 1.8567   | 0.9647   |
-| LSTM RELU                               | 2.0296   | 0.9591   |
-|                    **Bidirectional LSTM Models**              |
-| BI LSTM ELU                             | 1.7919   | 0.9671   |
-| BI LSTM LEAKY                           | 1.8283   | 0.9659   |
-| BI LSTM RELU                            | 2.2039   | 0.9550   |
-|                       **XGBoost Models**                      |
-| XGBoost using a Monte Carlo Ensemble    | 1.7417   | 0.9665   |
-| XGBoost using a Bootstrap Ensemble      | 1.8020   | 0.9647   |
-| **Random Forest Model**                 |          |          |
-| RandomForestRegressor                   | 1.4533   | 0.9684   |
+### LSTM Models
 
+| **Model**                        | **MAPE** | **R²**   |
+|----------------------------------|----------|----------|
+| LSTM ELU                         | 1.7424   | 0.9683   |
+| LSTM ELU + Monte Carlo Dropout  | 1.7648   | 0.9678   |
+| LSTM LEAKY                       | 1.8567   | 0.9647   |
+| LSTM RELU                        | 2.0296   | 0.9591   |
+
+### Bidirectional LSTM Models
+
+| **Model**       | **MAPE** | **R²**   |
+|-----------------|----------|----------|
+| BI LSTM ELU     | 1.7919   | 0.9671   |
+| BI LSTM LEAKY   | 1.8283   | 0.9659   |
+| BI LSTM RELU    | 2.2039   | 0.9550   |
+
+### XGBoost Models
+
+| **Model**                          | **MAPE** | **R²**   |
+|-----------------------------------|----------|----------|
+| XGBoost with Monte Carlo Ensemble | 1.7417   | 0.9665   |
+| XGBoost with Bootstrap Ensemble   | 1.8020   | 0.9647   |
+
+### Random Forest Model
+
+| **Model**              | **MAPE** | **R²**   |
+|------------------------|----------|----------|
+| RandomForestRegressor  | 1.4533   | 0.9684   |
 
 # Contact
 
