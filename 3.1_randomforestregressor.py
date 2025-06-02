@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""Copia de 3.1 RandomForestRegressor.ipynb
+"""3.1 RandomForestRegressor.ipynb
 
-# **3. Creation of the predictive model**
+# **3. Creation of the Predictive Model**
 
-**Imports**
+Imports
 """
 
 import pandas as pd
@@ -11,46 +11,27 @@ import numpy as np
 from IPython.display import Image, display
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-from sklearn.model_selection import train_test_split,cross_val_score,GridSearchCV
+from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
 import matplotlib.pyplot as plt
 import warnings
 
 """# **3.1 RandomForestRegressor**
 
-**Why RandomForestRegressor?** It is a regression model that uses multiple decision trees to make predictions. Each tree is trained on a random subset of data and features, which reduces the dependency between them and improves the efficiency of the model. When making a prediction, each tree provides its result, and the model calculates the average of these predictions.
+Why RandomForestRegressor? It's a regression model that uses multiple decision trees to make predictions. Each tree is trained on a random subset of data and features, which reduces their dependency and improves the model's performance. When a prediction is made, each tree gives its result, and the model averages those predictions.
 
-This model is very suitable for our case because it avoids overfitting, can handle non-linear relationships, performs well with noisy data or outliers, and additionally, we can determine the importance of each feature for subsequent modeling.
+This model is well suited for our case, as it avoids overfitting, can handle nonlinear relationships, and works well with noisy data or outliers. Additionally, it allows us to determine the importance of each feature for further modeling.
+
+Load the processed dataset from .csv
 """
 
-df_cleaned = pd.read_csv("dataframe_final.csv",sep=",")
-column_translation = {
-    'Any': 'Year',
-    'Mes': 'Month',
-    'Dia': 'Day',
-    'Tram_Horari': 'Time_Slot',
-    'Codi_Postal': 'Postal_Code',
-    'Valor': 'Value',
-    'temperature_2m': 'Temperature_2m',
-    'apparent_temperature': 'Apparent_Temperature',
-    'wind_speed_10m': 'Wind_Speed_10m',
-    'sunshine_duration': 'Sunshine_Duration',
-    'direct_radiation': 'Direct_Radiation',
-    'Dia_Setmana': 'Weekday',
-    'Tasa interanual del IPI': 'Yearly_IPI_Rate',
-    'dew_point_2m': 'Dew_Point_2m'
-}
-
-df_cleaned.rename(columns=column_translation, inplace=True)
+df_cleaned = pd.read_csv("dataframe_final.csv", sep=",")
 df_cleaned.describe()
 
-"""**Significance** of each independent variable with respect to the dependent variable"""
+"""Importance of each independent variable with respect to the target variable"""
 
-X = df_cleaned[['Any', 'Mes', 'Dia','Tram_Horari','Codi_Postal', 'temperature_2m',
-                  'apparent_temperature','rain','wind_speed_10m','is_day',
-                  'sunshine_duration','direct_radiation','Dia_Setmana',
-                  'Festiu','Tasa interanual del IPI','dew_point_2m']]
+X = df_cleaned.drop(columns=['Tasa interanual del IPI', 'Valor'])
 
-y = df_cleaned['Valor']
+y = df_cleaned['Valor']  # Target variable
 
 model = RandomForestRegressor()
 model.fit(X, y)
@@ -65,242 +46,182 @@ model.fit(X_train, y_train)
 
 y_pred = model.predict(X_test)
 
+# Calculate MAE and MSE
 mae = mean_absolute_error(y_test, y_pred)
-mse= mean_squared_error(y_test, y_pred)
+mse = mean_squared_error(y_test, y_pred)
 r2 = r2_score(y_test, y_pred)
 
 print(f"Mean Absolute Error (MAE): {mae}")
 print(f"Mean Squared Error (MSE): {mse}")
 print(f"R² Score: {r2}")
-print('Mean Absolute Percentage Error (MAPE): ',mae*100/(y_test.max()-y_test.min()))
+print('Mean Absolute Percentage Error (MAPE): ', mae * 100 / (y_test.max() - y_test.min()))
 
-"""Eliminate the features that do not add value, creating new models and testing their performance to find the best combination of independent variables that explain the target variable, in our case 'Valor,' the energy demand."""
+"""**GridSearchCV**"""
 
-X_reduced = X.drop(columns=[ 'rain', 'wind_speed_10m','dew_point_2m','Tasa interanual del IPI'])
-X_train, X_test, y_train, y_test = train_test_split(X_reduced, y, test_size=0.2, random_state=42)
-
-model_reduced = RandomForestRegressor()
-model_reduced.fit(X_train, y_train)
-y_pred = model_reduced.predict(X_test)
-
-mae = mean_absolute_error(y_test, y_pred)
-mse= mean_squared_error(y_test, y_pred)
-r2 = r2_score(y_test, y_pred)
-
-print(f"Mean Absolute Error (MAE): {mae}")
-print(f"Mean Squared Error (MSE): {mse}")
-print(f"R² Score: {r2}")
-print('Mean Absolute Percentage Error (MAPE): ',mae*100/(y_test.max()-y_test.min()))
-
-X_reduced2 = X.drop(columns=['rain', 'is_day', 'sunshine_duration','Festiu', 'wind_speed_10m','temperature_2m','dew_point_2m'])
-
-X_train, X_test, y_train, y_test = train_test_split(X_reduced2, y, test_size=0.2, random_state=42)
-
-model_reduced2 = RandomForestRegressor()
-model_reduced2.fit(X_train, y_train)
-y_pred = model_reduced2.predict(X_test)
-
-# Calcular el MAE y el MSE
-mae = mean_absolute_error(y_test, y_pred)
-mse= mean_squared_error(y_test, y_pred)
-r2 = r2_score(y_test, y_pred)
-
-print(f"Mean Absolute Error (MAE): {mae}")
-print(f"Mean Squared Error (MSE): {mse}")
-print(f"R² Score: {r2}")
-print('Mean Absolute Percentage Error (MAPE): ',mae*100/(y_test.max()-y_test.min()))
-
-"""We will try a less restrictive model with feature importance and compare it with the previous one."""
-
-X_reduced3 = X.drop(columns=['rain', 'is_day', 'sunshine_duration','Festiu', 'wind_speed_10m','temperature_2m','dew_point_2m',"Tasa interanual del IPI"])
-
-X_train, X_test, y_train, y_test = train_test_split(X_reduced3, y, test_size=0.2, random_state=42)
-
-model_reduced3 = RandomForestRegressor()
-model_reduced3.fit(X_train, y_train)
-y_pred = model_reduced3.predict(X_test)
-
-mae = mean_absolute_error(y_test, y_pred)
-mse= mean_squared_error(y_test, y_pred)
-r2 = r2_score(y_test, y_pred)
-
-print(f"Mean Absolute Error (MAE): {mae}")
-print(f"Mean Squared Error (MSE): {mse}")
-print(f"R² Score: {r2}")
-print('Mean Absolute Percentage Error (MAPE): ',mae*100/(y_test.max()-y_test.min()))
-
-X_reduced4 = X.drop(columns=[ 'wind_speed_10m','temperature_2m','dew_point_2m',"Tasa interanual del IPI"])
-
-X_train, X_test, y_train, y_test = train_test_split(X_reduced4, y, test_size=0.2, random_state=42)
-
-model_reduced4 = RandomForestRegressor()
-model_reduced4.fit(X_train, y_train)
-y_pred = model_reduced4.predict(X_test)
-
-mae = mean_absolute_error(y_test, y_pred)
-mse= mean_squared_error(y_test, y_pred)
-r2 = r2_score(y_test, y_pred)
-
-print(f"Mean Absolute Error (MAE): {mae}")
-print(f"Mean Squared Error (MSE): {mse}")
-print(f"R² Score: {r2}")
-print('Mean Absolute Percentage Error (MAPE): ',mae*100/(y_test.max()-y_test.min()))
-
-"""**GridSearchCV** with the selected features"""
-
-X_reduced4 = X.drop(columns=['wind_speed_10m', 'temperature_2m', 'dew_point_2m', "Tasa interanual del IPI"])
-
-X_train, X_test, y_train, y_test = train_test_split(X_reduced4, y, test_size=0.2, random_state=42)
-
+# Random Forest model definition
 rf_model = RandomForestRegressor(random_state=42)
 
+# Reduce dataset size
+from sklearn.utils import resample
+
+# Subsample 30% of training data
+X_train_small, y_train_small = resample(X_train, y_train, replace=False, n_samples=int(0.3 * len(X_train)), random_state=42)
+
+# Hyperparameter grid
 param_grid = {
-    'n_estimators': [300, 400],
-    'min_samples_split': [2, 3, 5],
+    'n_estimators': [300],
+    'max_depth': [None, 15],
+    'min_samples_split': [2, 5, 10],
     'min_samples_leaf': [1, 2, 4],
-    'ccp_alpha': [0.0, 0.01, 0.05]  # L2 reg.
+    'max_features': ['sqrt', 'log2', None],
+    'ccp_alpha': [0.001]
 }
 
-grid_search = GridSearchCV(estimator=rf_model, param_grid=param_grid, cv=3, scoring='neg_mean_absolute_error', n_jobs=1, verbose=1)
-grid_search.fit(X_train, y_train)
+# Hyperparameter tuning with GridSearchCV
+grid_search = GridSearchCV(estimator=rf_model, param_grid=param_grid, cv=3, scoring='neg_mean_absolute_error', n_jobs=1, verbose=2)
+grid_search.fit(X_train_small, y_train_small)
 
-print("Best hyperparametres:", grid_search.best_params_)
+# Best hyperparameters found
+print("Best hyperparameters found:", grid_search.best_params_)
 
+# Train model with best hyperparameters
 best_model = grid_search.best_estimator_
-best_model.fit(X_train, y_train)
+best_model.fit(X_train_small, y_train_small)
 
+# Predictions
 y_pred = best_model.predict(X_test)
 
+# Compute metrics
 mae = mean_absolute_error(y_test, y_pred)
 mse = mean_squared_error(y_test, y_pred)
 r2 = r2_score(y_test, y_pred)
 
+# Results
 print(f"Mean Absolute Error (MAE): {mae}")
 print(f"Mean Squared Error (MSE): {mse}")
 print(f"R² Score: {r2}")
-print('Mean Absolute Error (MAE) en %: ', mae * 100 / (y_test.max() - y_test.min()))
+print('Mean Absolute Error (MAE) in %: ', mae * 100 / (y_test.max() - y_test.min()))
 
-X_reduced4 = X.drop(columns=['wind_speed_10m', 'temperature_2m', 'dew_point_2m', "Tasa interanual del IPI"])
+"""**Modification of some parameters**"""
 
-X_train, X_test, y_train, y_test = train_test_split(X_reduced4, y, test_size=0.2, random_state=42)
+from sklearn.preprocessing import StandardScaler
 
-rf_model = RandomForestRegressor(n_estimators=300,random_state=42,n_jobs=-1)
-rf_model.fit(X_train, y_train)
-y_pred = rf_model.predict(X_test)
+# Split the data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-mae = mean_absolute_error(y_test, y_pred)
+# Initialize scaler
+scaler = StandardScaler()
+
+# Fit and transform X_train, only transform X_test
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+ran_for_model = RandomForestRegressor(ccp_alpha=0.0005, max_depth=None, max_features=None,
+                                      min_samples_leaf=2, min_samples_split=2, n_estimators=600)
+
+# Train model
+ran_for_model.fit(X_train, y_train)
+
+# Predictions
+y_pred = ran_for_model.predict(X_test)
+
+# Performance metrics
 mse = mean_squared_error(y_test, y_pred)
+mae = mean_absolute_error(y_test, y_pred)
 r2 = r2_score(y_test, y_pred)
 
-print(f"Mean Absolute Error (MAE): {mae}")
-print(f"Mean Squared Error (MSE): {mse}")
-print(f"R² Score: {r2}")
-print('Mean Absolute Error (MAE) en %: ', mae * 100 / (y_test.max() - y_test.min()))
+print('Mean Absolute Error (MAE) in %: ', mae * 100 / (y_test.max() - y_test.min()))
+print(f"R² test: {r2:.4f}")
 
-"""We will graph the results of our predictions against the actual values."""
+"""Plot prediction results vs actual values"""
 
-plt.figure(figsize=(6, 4))
+plt.figure(figsize=(10, 4))
 plt.scatter(y_test, y_pred, alpha=0.2, color='blue')
-plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'k--', lw=2, color='red')  # Línea ideal
-plt.title("Prediccions vs Valors Reals")
-plt.xlabel("Valors Reals")
-plt.ylabel("Prediccions")
+plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'k--', lw=2, color='red')  # Ideal line
+plt.title("Predictions vs Actual Values")
+plt.xlabel("Actual Values")
+plt.ylabel("Predictions")
 plt.grid()
 plt.show()
 
-"""# **3.1.2 Quantifying the associated uncertainty**
+"""# **3.1.2 Quantifying Associated Uncertainty**
 
-The uncertainty that we calculate with the standard deviation (std) of the predictions from each of the trees is a measure of the variability or dispersion of the model’s tree predictions, for each value of the target variable, in our case, energy demand.
+The uncertainty calculated using the standard deviation (std) of the predictions from each tree is a measure of the variability or dispersion of the trees' predictions in the model, for each target value — in our case, the energy demand.
 
-*   68% of the data is within a range of ±1 standard deviation.
-*   95% of the data is within ±2 standard deviations.
-*   99.7% of the data is within ±3 standard deviations.
+*   68% of data falls within ±1 standard deviation
+*   95% of data falls within ±2 standard deviations
+*   99.7% of data falls within ±3 standard deviations
 """
 
-warnings.filterwarnings('ignore') #X has feature names, but DecisionTreeRegressor was fitted without feature names
+warnings.filterwarnings('ignore')  # X has feature names, but DecisionTreeRegressor was fitted without feature names
 
-# Obtenir les prediccions dels diferents arbres
-all_tree_preds = np.array([tree.predict(X_test) for tree in rf_model.estimators_])
+# Get predictions from all trees
+all_tree_preds = np.array([tree.predict(X_test) for tree in ran_for_model.estimators_])
 
-# Mitjana de les prediccions (predicció final)
+# Mean of the predictions (final prediction)
 final_prediction = np.mean(all_tree_preds, axis=0)
 
-# Incertesa (per exemple, desviació estàndard de les prediccions)
+# Uncertainty (standard deviation of predictions)
 prediction_uncertainty = np.std(all_tree_preds, axis=0)
 
-# Crear el DataFrame amb les dues columnes
+# Create DataFrame
 df_predictions = pd.DataFrame({
-    'Predicció': final_prediction,
-    'Incertesa': prediction_uncertainty
+    'Prediction': final_prediction,
+    'Uncertainty': prediction_uncertainty
 })
 
-# Mostrar el DataFrame
+# Show DataFrame
 print(df_predictions.head())
 
-print('Incertesa mitjana: ',df_predictions['Incertesa'].median(),'/','Respecte el total: ',(df_predictions['Incertesa'].median()/(y_test.max()-y_test.min()))*100,'%')
-print('Incertesa mitjana aritmética: ',df_predictions['Incertesa'].mean(),'/','Respecte el total: ',(df_predictions['Incertesa'].mean()/(y_test.max()-y_test.min()))*100,'%')
+print('Median uncertainty: ', df_predictions['Uncertainty'].median(), '/',
+      'Relative to total: ', (df_predictions['Uncertainty'].median() / (y_test.max() - y_test.min())) * 100, '%')
+print('Mean uncertainty: ', df_predictions['Uncertainty'].mean(), '/',
+      'Relative to total: ', (df_predictions['Uncertainty'].mean() / (y_test.max() - y_test.min())) * 100, '%')
 
-# Graficar les prediccions contra la incertesa
+# Plot predictions vs uncertainty
 plt.figure(figsize=(10, 3))
 plt.scatter(final_prediction, prediction_uncertainty, alpha=0.07)
-plt.title("Predicció vs Incertesa")
-plt.xlabel("Predicció Final")
-plt.ylabel("Incertesa (Desviació Estàndard)")
+plt.title("Prediction vs Uncertainty")
+plt.xlabel("Final Prediction")
+plt.ylabel("Uncertainty (Standard Deviation)")
 plt.show()
 
-df = pd.DataFrame(X_test, columns=['Any', 'Mes', 'Dia','Tram_Horari','Codi_Postal',
-                  'apparent_temperature','sunshine_duration','direct_radiation','Dia_Setmana',
-                  'Festiu','Tasa interanual del IPI'])
+import seaborn as sns
 
-# Afegir les prediccions al DataFrame
-df['Predicció'] = final_prediction
-df['Incertesa'] = prediction_uncertainty
-df['Valor'] = y_test
+def evaluate_model_mc(y_test, y_pred):
+    # Calculate percentage errors
+    Min = y_test.min()
+    Max = y_test.max()
+    Rang = Max - Min
 
-# Agrupar per 'Any' i 'Mes' i calcular la mitjana
-df_grouped = df.groupby(['Any', 'Mes']).agg({
-    'Predicció': 'mean',       # Mitjana de les prediccions
-    'Valor': 'mean',           # Mitjana dels valors reals
-    'Incertesa': 'mean'        # Mitjana de la incertesa
-}).reset_index()
+    errors_percentual = (abs(y_test - y_pred) / abs(Rang)) * 100
 
-# Calcular l'error absolut
-df_grouped['Error'] = abs(df_grouped['Valor'] - df_grouped['Predicció'])
+    # Clip errors
+    errors_percentual = np.clip(errors_percentual, 0, 30)
 
-# Definir els intervals per l'error
-bins = [0, 500, 2000, 5000, np.inf]  # Definir intervals d'error
-labels = ['Baix Error', 'Mitjà Error', 'Alt Error', 'Molt Alt Error']  # Etiquetes per cada interval
+    # Create figure
+    fig, ax = plt.subplots(figsize=(7, 4))
 
-# Assignar la categoria d'error segons l'interval
-df_grouped['Error_Category'] = pd.cut(df_grouped['Error'], bins=bins, labels=labels)
+    # Histogram with KDE
+    sns.histplot(errors_percentual, kde=False, stat="percent", bins=60, ax=ax,
+                 color="skyblue", edgecolor="black")
 
-# Crear el gràfic
-plt.figure(figsize=(12, 6))
+    # Chart aesthetics
+    ax.set_title("Percentage Error Distribution", fontsize=14, fontweight='bold')
+    ax.set_xlabel("Percentage Error (%)", fontsize=13)
+    ax.set_ylabel("Sample Percentage (%)", fontsize=13)
 
-# Assignar colors per cada categoria d'error
-color_map = {'Baix Error': 'green', 'Mitjà Error': 'yellow', 'Alt Error': 'orange', 'Molt Alt Error': 'red'}
+    ax.set_xlim(left=0, right=5)
+    ax.set_ylim(bottom=0)
 
-# Crear el gràfic de dispersió amb colors categòrics per error
-for category, color in color_map.items():
-    category_data = df_grouped[df_grouped['Error_Category'] == category]
-    plt.scatter(category_data.index, category_data['Predicció'],
-                c=color, label=category, marker='o', edgecolors='k', s=100)  # S = size per controlar la mida dels punts
+    ax.set_xticks(np.arange(0, 5.1, 0.5))
+    ax.set_xticklabels([f'{i}%' for i in np.arange(0, 5.1, 0.5)])
 
-# Afegir la línia que uneix els punts de les prediccions
-plt.plot(df_grouped.index, df_grouped['Predicció'], color='blue', linestyle='-', alpha=0.8, label='Línia Predicció')
+    ax.set_yticks(np.arange(0, 41, 5))
+    ax.set_yticklabels([f'{i:.1f}' for i in np.arange(0, 41, 5)])
+    ax.grid(True)
 
-# Afegir les "bales d'error" per mostrar la incertesa
-plt.errorbar(df_grouped.index, df_grouped['Predicció'], yerr=df_grouped['Incertesa'], fmt='o', color='black', alpha=0.5, label='Incertesa')
+    plt.tight_layout()
+    plt.show()
 
-# Afegir títols i etiquetes
-plt.title('Predicció per Any i Mes amb Error Categòric i Incertesa')
-plt.xlabel('Índex (Any-Mes)')
-plt.ylabel('Valor Predicció')
-plt.xticks(df_grouped.index, [f"{int(row['Any'])}-{int(row['Mes'])}" for _, row in df_grouped.iterrows()], rotation=90)
-
-# Afegir llegenda
-plt.legend()
-
-# Mostrar el gràfic
-plt.tight_layout()  # Per ajustar l'espai entre les etiquetes i el gràfic
-plt.show()
+evaluate_model_mc(y_test, y_pred)
