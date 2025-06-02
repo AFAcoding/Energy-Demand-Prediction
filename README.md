@@ -28,6 +28,8 @@ Here are the final results from the models' performance:
 
 ![Table](table.png)
 
+![Plot](plot_res.png)
+
 # Contact
 
 **Aleix Francia Albert**  
