@@ -26,6 +26,7 @@ The goal of the project is to provide insights into the factors influencing ener
 
 Here are the final results from the models' performance:
 
+![Table](table.png)
 
 # Contact
 
