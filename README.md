@@ -28,7 +28,7 @@ Here are the final results from the models' performance:
 
 <p align="left">
   <img src="table.png" alt="Table" width="388"/>
-  <img src="plot_res.png" alt="Plot" width="611"/>
+  <img src="plot_res.png" alt="Plot" width="612"/>
 </p>
 
 
