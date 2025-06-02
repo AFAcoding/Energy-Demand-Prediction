@@ -26,9 +26,11 @@ The goal of the project is to provide insights into the factors influencing ener
 
 Here are the final results from the models' performance:
 
-![Table](table.png)
+<p align="center">
+  <img src="table.png" alt="Table" width="350"/>
+  <img src="plot_res.png" alt="Plot" width="350"/>
+</p>
 
-![Plot](plot_res.png)
 
 # Contact
 
